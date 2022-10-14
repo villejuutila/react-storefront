@@ -7,9 +7,18 @@ import currency from "currency.js";
 import { ADYEN_PAYMENT_PREFIX } from "./providers/adyen";
 import { MOLLIE_PAYMENT_PREFIX } from "./providers/mollie";
 
-export const formatRedirectUrl = (redirectUrl: string, orderId: string) => {
+export const formatRedirectUrl = ({
+  saleorApiHost,
+  redirectUrl,
+  orderId,
+}: {
+  saleorApiHost: string;
+  redirectUrl: string;
+  orderId: string;
+}) => {
   const url = new URL(redirectUrl);
   url.searchParams.set("order", orderId);
+  url.searchParams.set("saleorApiHost", saleorApiHost);
 
   return url.toString();
 };

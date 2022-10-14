@@ -12,35 +12,46 @@ import { RootViews } from "../views/RootViews/RootViews";
 import { useMemo } from "react";
 import { DEFAULT_LOCALE } from "@/checkout-storefront/lib/regions";
 import { useLocale } from "@/checkout-storefront/hooks/useLocale";
+import { getQueryParams } from "../lib/utils";
 
 export interface RootProps {
   env: AppEnv;
 }
 export const Root = ({ env }: RootProps) => {
   const authorizedFetch = useMemo(() => createFetch(), []);
+  const { saleorApiHost } = getQueryParams();
   const { locale, messages } = useLocale();
 
   const client = useMemo(
     () =>
-      createClient({
-        url: env.apiUrl,
-        suspense: true,
-        requestPolicy: "cache-and-network",
-        fetch: authorizedFetch as ClientOptions["fetch"],
-      }),
-    [authorizedFetch, env.apiUrl]
+      saleorApiHost
+        ? createClient({
+            url: `https://${saleorApiHost}/graphql/`,
+            suspense: true,
+            requestPolicy: "cache-and-network",
+            fetch: authorizedFetch as ClientOptions["fetch"],
+          })
+        : null,
+    [authorizedFetch, saleorApiHost]
   );
 
   // temporarily need to use @apollo/client because saleor sdk
   // is based on apollo. to be changed
   const saleorClient = useMemo(
     () =>
-      createSaleorClient({
-        apiUrl: env.apiUrl,
-        channel: "default-channel",
-      }),
-    [env.apiUrl]
+      saleorApiHost
+        ? createSaleorClient({
+            apiUrl: `https://${saleorApiHost}/graphql/`,
+            channel: "default-channel",
+          })
+        : null,
+    [saleorApiHost]
   );
+
+  if (!saleorApiHost || !saleorClient || !client) {
+    console.warn(`Missing "domain" query param!`);
+    return null;
+  }
 
   return (
     // @ts-ignore React 17 <-> 18 type mismatch
