@@ -62,14 +62,24 @@ export const clearUrlAfterPasswordReset = (): void => {
 export const localeToLanguageCode = (locale: Locale) =>
   snakeCase(locale).toUpperCase() as LanguageCodeEnum;
 
+export const getUrl = ({
+  url,
+  query,
+}: {
+  url: string;
+  query?: Record<string, undefined | null | string | number>;
+}) => {
+  return queryString.stringifyUrl({ url, query });
+};
+
 export const replaceUrl = ({
   url = window.location.toString(),
   query,
 }: {
   url?: string;
-  query?: Record<string, any>;
+  query?: Record<string, undefined | null | string | number>;
 }) => {
-  const newUrl = queryString.stringifyUrl({ url, query });
+  const newUrl = getUrl({ url, query });
 
   window.history.pushState(
     {
