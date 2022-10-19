@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { verifyPayment } from "@/saleor-app-checkout/backend/payments/providers/mollie";
 import { updateOrCreateTransaction } from "@/saleor-app-checkout/backend/payments/updateOrCreateTransaction";
 import { unpackPromise, unpackThrowable } from "@/saleor-app-checkout/utils/unpackErrors";
-import { getSaleorApiHostFromRequest } from "@/saleor-app-checkout/backend/auth";
+import { getSaleorApiUrlFromRequest } from "@/saleor-app-checkout/backend/auth";
 
 /**
   Webhooks endpoint for mollie payment gateway.
@@ -19,17 +19,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const [saleorApiHostError, saleorApiHost] = unpackThrowable(() =>
-    getSaleorApiHostFromRequest(req)
-  );
+  const [saleorApiUrlError, saleorApiUrl] = unpackThrowable(() => getSaleorApiUrlFromRequest(req));
 
-  if (saleorApiHostError) {
-    Sentry.captureException(saleorApiHostError);
-    res.status(400).json({ message: saleorApiHostError.message });
+  if (saleorApiUrlError) {
+    Sentry.captureException(saleorApiUrlError);
+    res.status(400).json({ message: saleorApiUrlError.message });
     return;
   }
 
-  const [paymentError, paymentData] = await unpackPromise(verifyPayment({ saleorApiHost, id }));
+  const [paymentError, paymentData] = await unpackPromise(verifyPayment({ saleorApiUrl, id }));
 
   if (paymentError) {
     Sentry.captureException(paymentError);
@@ -43,7 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   if (paymentData) {
     await updateOrCreateTransaction({
-      saleorApiHost,
+      saleorApiUrl,
       orderId: paymentData.id,
       transactionData: paymentData,
     });

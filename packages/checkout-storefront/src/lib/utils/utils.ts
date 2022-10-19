@@ -26,7 +26,7 @@ export type QueryParams = Partial<
     | "redirectUrl"
     | "locale"
     | "dummyPayment"
-    | "saleorApiHost",
+    | "saleorApiUrl",
     string
   >
 > & { countryCode: CountryCode; locale: Locale };
@@ -48,7 +48,7 @@ export const getQueryParams = (): QueryParams => {
     orderId: vars.order as string | undefined,
     passwordResetToken: vars.token as string | undefined,
     dummyPayment: vars.dummyPayment as "true" | undefined,
-    saleorApiHost: vars.saleorApiHost as string | undefined,
+    saleorApiUrl: vars.saleorApiUrl as string | undefined,
   } as QueryParams;
 };
 
