@@ -8,13 +8,7 @@ import * as yup from "yup";
 import { getSaleorApiUrlFromRequest } from "@/saleor-app-checkout/backend/auth";
 import { unpackThrowable } from "@/saleor-app-checkout/utils/unpackErrors";
 
-<<<<<<< HEAD
 const dummyPayBodySchema = yup.object({
-=======
-const dummyPayBodySchema: yup.ObjectSchema<
-  Omit<DummyPayRequestBody, "checkoutApiUrl" | "saleorApiUrl">
-> = yup.object({
->>>>>>> 1e7fd876 (Refactor to 'saleorApiUrl')
   orderId: yup.string().required(),
   amountCharged: yup.object({
     amount: yup.number().required(),
