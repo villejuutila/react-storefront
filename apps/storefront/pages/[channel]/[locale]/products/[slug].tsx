@@ -63,6 +63,8 @@ function ProductPage({ product }: InferGetStaticPropsType<typeof getStaticProps>
   const t = useIntl();
   const { currentChannel, formatPrice, query } = useRegions();
 
+  const { authenticated } = useAuthState();
+
   const { checkoutToken, setCheckoutToken, checkout } = useCheckout();
 
   const [createCheckout] = useCreateCheckoutMutation();
@@ -144,7 +146,10 @@ function ProductPage({ product }: InferGetStaticPropsType<typeof getStaticProps>
   };
 
   const isAddToCartButtonDisabled =
-    !selectedVariant || selectedVariant?.quantityAvailable === 0 || loadingAddToCheckout;
+    !selectedVariant ||
+    selectedVariant?.quantityAvailable === 0 ||
+    loadingAddToCheckout ||
+    !authenticated;
 
   const description = translate(product, "description");
 

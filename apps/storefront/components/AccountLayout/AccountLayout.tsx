@@ -12,6 +12,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
   const router = useRouter();
   const paths = usePaths();
   const { authenticated, authenticating } = useAuthState();
+
   if (authenticating) {
     return (
       <Layout>
@@ -21,7 +22,7 @@ export function AccountLayout({ children }: AccountLayoutProps) {
   }
 
   if (!authenticated && typeof window !== "undefined") {
-    router.push(paths.account.login.$url({ query: { next: router?.pathname } }));
+    router.push(paths.$url());
     return null;
   }
 

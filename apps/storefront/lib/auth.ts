@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useApolloClient } from "@apollo/client";
 import { useAuth } from "@saleor/sdk";
 import { useRouter } from "next/router";
@@ -14,7 +15,12 @@ export const useLogout = () => {
   const paths = usePaths();
 
   const onLogout = async () => {
-    await logout();
+    const returnTo = "http://localhost:3000/";
+    const data = await logout({
+      input: JSON.stringify({ returnTo }),
+    });
+    const logoutUrl: string = JSON.parse(data?.data?.externalLogout?.logoutData).logoutUrl;
+    window.location.assign(logoutUrl.replace("returnTo", "redirect_uri"));
     await resetCheckoutToken();
     await client.resetStore();
     router.push(paths.$url());
